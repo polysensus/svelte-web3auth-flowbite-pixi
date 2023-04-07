@@ -1,0 +1,5 @@
+export PUBLIC_MUMBAI_POLLING=1000
+
+export NODE_TLS_REJECT_UNAUTHORIZED="0"
+
+export PUBLIC_WEB3AUTH_CLIENT_ID=<YOUR CLIENT ID FROM https://dashboard.web3auth.iohttps://dashboard.web3auth.io>
