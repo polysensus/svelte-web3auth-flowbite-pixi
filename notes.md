@@ -1,0 +1,2 @@
+* following this guide https://flowbite.com/docs/getting-started/svelte/
+* the starter for svelte installed typescrypt 5 but the tailwindcss starter installs svelte-preprocess 4. re-installing svelte-preprocess@latest fixed this
