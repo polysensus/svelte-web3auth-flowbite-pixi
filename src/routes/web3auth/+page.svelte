@@ -1,36 +1,17 @@
 <Button on:click={async () => {await connect()}}>Connect</Button>
-<p>{connected ? "Connected": "Not Connected"}</p>
-<p>{JSON.stringify(cfg, null, '  ')}</p>
+<p>{address ? `Connected: ${address}`: "Not Connected"}</p>
+<!--<p>{JSON.stringify(cfg, null, '  ')}</p> -->
 
 <script>
   import { browser } from '$app/environment';
   import { Button } from 'flowbite-svelte';
-  // XXX: web3auth/modal dependencies get very confused, an expect node globals, this horror seems to be 'the way'
-  import * as node_process from "process";
-  import * as crypto_browserfify from "crypto";
-  import { Buffer as FerrosBuffer } from  "buffer/";
-	import { onMount } from 'svelte';
+  import { Web3Auth } from "@web3auth/modal";
+  import { ethers } from "ethers";
 
-  let Web3Auth;
-
-  onMount(async () => {
-    /*
-    window.global = window;
-    window.process = node_process;
-    if (typeof crypto === 'undefined') {
-      // Only if we must
-      window.crypto = crypto_browserfify;
-    }
-    if (typeof Buffer && typeof window.Buffer === 'undefined') {
-      window.Buffer = FerrosBuffer;
-    }
-    */
-    const pkg = await import("@web3auth/modal");
-    Web3Auth = pkg.Web3Auth;
-    console.log(Web3Auth.constructor.name);
-  })
-
+  let web3authProvider=undefined;
+  let provider=undefined;
   let connected=false;
+  let address=undefined;
   let cfg = {};
   let web3auth;
 
@@ -41,9 +22,17 @@
     const resp = await fetch(`/api/providers/mumbai`);
     cfg = await resp.json();
     web3auth = new Web3Auth({
+      clientId: cfg.web3auth.clientId,
+      web3AuthNetwork: cfg.web3auth.web3AuthNetwork,
       chainConfig: {...cfg.chainConfig},
-      clientId: cfg.web3auth.clientId
     });
     await web3auth.initModal();
+    web3authProvider = await web3auth.connect();
+    console.log('----------');
+    console.log(web3authProvider);
+    provider = new ethers.providers.Web3Provider(web3authProvider);
+    console.log(provider);
+    const signer = await provider.getSigner();
+    address = await signer?.getAddress();
   }
 </script>
