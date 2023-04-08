@@ -1,5 +1,15 @@
-<Button on:click={async () => {await connect()}}>Connect</Button>
+<Button on:click={async () => {
+  if (!web3authProvider)
+    await connect()
+  else
+    await logout()
+  }}>{!web3authProvider ? "Connect" : "Logout"}</Button>
+<br/>
 <p>{address ? `Connected: ${address}`: "Not Connected"}</p>
+<p>{`name: ${user?.name}`}</p>
+<p>{`email: ${user?.email}`}</p>
+<p>{`verifierId: ${user?.verifierId}`}</p>
+<p>{`verifier: ${user?.verifier}`}</p>
 <!--<p>{JSON.stringify(cfg, null, '  ')}</p> -->
 
 <script>
@@ -12,11 +22,21 @@
   let provider=undefined;
   let connected=false;
   let address=undefined;
+  let user=undefined;
   let cfg = {};
   let web3auth;
 
+  function _reset() {
+    web3authProvider = undefined;
+    provider = undefined;
+    user = undefined;
+    cfg = undefined;
+    address = undefined;
+  }
+
   async function connect() {
     if (!browser) return;
+    if (web3authProvider) {console.log("already connected"); return;}
 
     connected = !connected;
     const resp = await fetch(`/api/providers/mumbai`);
@@ -28,11 +48,18 @@
     });
     await web3auth.initModal();
     web3authProvider = await web3auth.connect();
-    console.log('----------');
-    console.log(web3authProvider);
+    if (!web3authProvider) { console.log("connect failed or canceled"); return;}
     provider = new ethers.providers.Web3Provider(web3authProvider);
-    console.log(provider);
     const signer = await provider.getSigner();
     address = await signer?.getAddress();
+    console.log(`connected with address: "${address}"`);
+    user = await web3auth.getUserInfo();
+  }
+
+  async function logout() {
+    if (!browser) return;
+    if (!web3authProvider) {console.log("not connected"); return;}
+    await web3auth.logout();
+    _reset();
   }
 </script>
