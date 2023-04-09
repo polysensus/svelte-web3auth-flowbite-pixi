@@ -19,7 +19,8 @@
   <NavHamburger on:click={toggle} />
   <NavUl {hidden}>
     <NavLi href="/" active={true}>Home</NavLi>
-    <NavLi href="/web3auth" active={true}>Signup/Signin</NavLi>
+    <NavLi href="/pixi" active={true}>Pixi</NavLi>
+    <NavLi href="/web3auth" active={true}>Web3Auth</NavLi>
   </NavUl>
 </Navbar>
 
