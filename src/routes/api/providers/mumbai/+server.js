@@ -23,12 +23,7 @@ export function GET() {
     chainId: 80001,
     currency: 'MATIC',
     url: secrets['MUMBAI_URL'],
-    polling: env['PUBLIC_MUMBAI_POLLING'] ?? 2000, 
-    web3auth: {
-      // web3auth - https://web3auth.io/docs/sdk/web/modal/initialize
-      clientId: env['PUBLIC_WEB3AUTH_CLIENT_ID'],
-      web3AuthNetwork: "testnet"
-    }
+    polling: env['PUBLIC_MUMBAI_POLLING'] ?? 2000
   });
 }
 

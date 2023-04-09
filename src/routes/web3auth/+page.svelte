@@ -38,13 +38,23 @@
     if (!browser) return;
     if (web3authProvider) {console.log("already connected"); return;}
 
+    let resp = await fetch(`/api/configs/web3auth`);
+    const web3authCfg = await resp.json();
+
     connected = !connected;
-    const resp = await fetch(`/api/providers/mumbai`);
-    cfg = await resp.json();
+    resp = await fetch(`/api/providers/mumbai`);
+    const providerCfg = await resp.json();
     web3auth = new Web3Auth({
-      clientId: cfg.web3auth.clientId,
-      web3AuthNetwork: cfg.web3auth.web3AuthNetwork,
-      chainConfig: {...cfg.chainConfig},
+      clientId: web3authCfg.clientId,
+      web3AuthNetwork: web3authCfg.web3AuthNetwork,
+      chainConfig: {
+        chainId: ethers.utils.hexlify(providerCfg.chainId),
+        displayName: providerCfg.description,
+        rpcTarget: providerCfg.url,
+        ticker: providerCfg.currency,
+        tickerName: providerCfg.currency,
+        ...providerCfg.chainConfig
+      },
     });
     await web3auth.initModal();
     web3authProvider = await web3auth.connect();
